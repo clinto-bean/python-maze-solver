@@ -46,13 +46,11 @@ class Tests(unittest.TestCase):
         num_cols = 10
         num_rows = 10
         m = Maze(0, 0, num_rows, num_cols, 10, 10)
-        for row in m._cells:
-            random_row = random.choice(m._cells)
-            return random_row
-        index = random.randint(0, len(random_row))
+        random_row = random.choice(m._cells)
+        index = random.choice(random_row)
 
         self.assertEqual(
-            m._cells[random_row[index]].visited,
+            index.visited,
             False
         )
 
