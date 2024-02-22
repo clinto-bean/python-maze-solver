@@ -45,54 +45,86 @@ class Maze:
         exit.has_bottom_wall = False
 
     def _break_walls_r(self, i=0, j=0):
-        start = self[i,j]
-        current = start
-
+        current = self[i,j]
         current.visited = True
+        while True:
 
-        unvisited = []
+            unvisited = []
 
-        if j > 0:
-            left = self[i, j-1]
-            if left.visited is False:
-                unvisited.append(left)
+            #choosing who to visit
+
+            if j > 0 and not self._cells[i][j-1].visited:
+                neighbor = self[i, j-1]
+                if neighbor.visited is False:
+                    unvisited.append(neighbor)
+                
+            if j < self._num_cols - 1 and not self._cells[i][j + 1].visited:
+                neighbor = self[i, j+1]
+                if neighbor.visited is False:
+                    unvisited.append(neighbor)
+                    
+            if i > 0 and not self._cells[i - 1][j].visited:
+                    neighbor = self[i-1,j]
+                    if neighbor.visited is False:
+                        unvisited.append(neighbor)
+
+            if i < self._num_rows - 1 and not self._cells[i][j + 1].visited:
+                neighbor = self[i+1,j]
+                if neighbor.visited is False:
+                    unvisited.append(neighbor)
+
+            if len(unvisited) == 0:
+                break
             
-        if j < self._num_cols - 1:
-            right = self[i, j+1]
-            if right.visited is False:
-                unvisited.append(right)
-            
-        if i > 0:
-            top = self[i-1,j]
-            if top.visited is False:
-                unvisited.append(top)
+            new_cell = random.choice(unvisited)
 
-        if i < self._num_rows - 1:
-            bottom = self[i+1,j]
-            if bottom.visited is False:
-                unvisited.append(bottom)
-
-        while len(unvisited) > 0:
-            neighbor = random.choice(unvisited)
+            if new_cell[0] == i + 1:
+                self._cells[i][j].has_right_wall = False
+                self._cells[i + 1][j].has_left_wall = False
             # left
-            if neighbor.j < current.j:
-                current.has_left_wall = False
-                neighbor.has_right_wall = False
-            #right
-            if neighbor.j > current.j:
-                current.has_right_wall = False
-                neighbor.has_left_wall = False
-            #above
-            if neighbor.i < current.i:
-                current.has_top_wall = False
-                neighbor.has_bottom_wall = False
-            #below
-            if neighbor.i > current.i:
-                current.has_bottom_wall = False
-                neighbor.has_top_wall = False
-            unvisited.remove(neighbor)
-            current = neighbor
-            self._break_walls_r(current.i, current.j)
+            if new_cell[0] == i - 1:
+                self._cells[i][j].has_left_wall = False
+                self._cells[i - 1][j].has_right_wall = False
+            # down
+            if new_cell[1] == j + 1:
+                self._cells[i][j].has_bottom_wall = False
+                self._cells[i][j + 1].has_top_wall = False
+            # up
+            if new_cell[1] == j - 1:
+                self._cells[i][j].has_top_wall = False
+                self._cells[i][j - 1].has_bottom_wall = False
+                
+            neighbor_index = random.randrange(len(unvisited))
+            neighbor = unvisited[neighbor_index]
+
+            if neighbor[0] == i + 1:
+                self._cells[i][j].has_right_wall = False
+                self._cells[i + 1][j].has_left_wall = False
+                
+            if neighbor[0] == i - 1:
+                self._cells[i][j].has_left_wall = False
+                self._cells[i - 1][j].has_right_wall = False
+                        
+            if neighbor[1] == j + 1:
+                self._cells[i][j].has_bottom_wall = False
+                self._cells[i][j + 1].has_top_wall = False
+
+            if neighbor[1] == j - 1:
+                self._cells[i][j].has_top_wall = False
+                self._cells[i][j - 1].has_bottom_wall = False
+
+            self._break_walls_r(neighbor[0], neighbor[1])
+            self._reset_cells_visited()
+
+    def _reset_cells_visited(self):
+        for cell in self._cells:
+            cell.visited = False
+
+    def _solve(self, i=0, j=0):
+        self._solve_r(i, j)
+
+    def _solve_r(self, i, j):
+        current = self[i, j]
 
     def _draw_cell(self,i,j):
         cell_x1 = i * self._cell_size_x + self._x1
