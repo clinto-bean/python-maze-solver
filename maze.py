@@ -117,8 +117,9 @@ class Maze:
             self._reset_cells_visited()
 
     def _reset_cells_visited(self):
-        for cell in self._cells:
-            cell.visited = False
+        for col in self._cells:
+            for cell in col:
+                cell.visited = False
 
     def _solve(self, i=0, j=0):
         self._solve_r(i, j)
